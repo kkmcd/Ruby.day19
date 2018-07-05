@@ -1,9 +1,19 @@
-alert("좋아요 설정됐쩡");
-$('.like').text("좋아요 취소").toggleClass("btn-warning btn-info text-white");
-if(<%= @like.frozen? %>)
-<!-- 좋아요가 취소된 경우 -->
-<!-- 좋아요 취소 버튼 -> 좋아요 버튼 -->
-} else {
-<!-- 좋아요가 새로 눌린 경우 -->
-<!-- 좋아요 버튼 -> 좋아요 취소 -->
+var like_count = parseInt($('.like-count').text());
+
+if(<%=@like.frozen?%>){
+    <!--frozen 이 true 좋아요 눌린인간이 취소함 다시 좋아요 표시 되게끔함-->
+    like_count = like_count -1
+    $('.like').html(`좋아요(<span class='like-count'>${like_count}</span>)`).addClass("btn-primary").removeClass("btn-warning");
+   
+     
+}else{
+    like_count = like_count +1
+     $('.like').html(`좋아요 취소(<span class="like-count">${like_count}</span>)`).addClass("btn-warning").removeClass("btn-primary");
+    
+     
 }
+//좋아요가 취소된 경우
+// 좋아요 취소버튼 -> 좋아요 버튼
+
+//좋아요가 새로 눌린 경우
+//좋아요 버튼 -> 좋아요 취소버튼으로 

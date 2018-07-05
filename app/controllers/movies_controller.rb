@@ -1,16 +1,18 @@
 class MoviesController < ApplicationController
 before_action :js_authenticate_user!, only: [:like_movie]
 before_action :authenticate_user!, except: [:index, :show]
-before_action :set_movie, only: [:show, :edit, :update, :destroy]  
+before_action :set_movie, only: [:show, :edit, :update, :destroy, :create_comment]  
   # GET /movies
   # GET /movies.json
   def index
     @movies = Movie.all
+    @comments = Comment.all
   end
 
   # GET /movies/1
   # GET /movies/1.json
   def show
+      @user_likes_movie = Like.where(user_id: current_user.id, movie_id: @movie.id).first
   end
 
   # GET /movies/new
@@ -73,12 +75,28 @@ before_action :set_movie, only: [:show, :edit, :update, :destroy]
     else
       @like.destroy
     end
-    @like.frozen? #삭제됐을경우 삭제되지 못하게 얼어있는다. 삭제된 경우가 좋아요 취소된 경우임. true라면 좋아요 취소 로직을 넣고, 아니면 좋아요가 새로 눌린 경우로 생각하면됨.
+    # @like.frozen? #삭제됐을경우 삭제되지 못하게 얼어있는다. 삭제된 경우가 좋아요 취소된 경우임. true라면 좋아요 취소 로직을 넣고, 아니면 좋아요가 새로 눌린 경우로 생각하면됨.
     # 만약에 현재 로그인한 유저가 이미 좋아요를 눌렀을 경우
     # 해당 Like 인스턴스 삭제
     # 새로 누른 경우
     # 좋아요 관계 설정
     
+  end
+  
+  
+  def create_comment
+    @comment = Comment.create(user_id: current_user.id, movie_id: @movie.id, contents: params[:contents])
+    #@movie.comments.new(user_id:current_user.id, movie_id: @movie.id)
+    
+  end
+
+  def destroy_comment
+    @comment = Comment.find(params[:comment_id]).destroy()
+  end
+  
+  def update_comment
+    @comment = Comment.find(params[:comment_id])
+    @comment.update(contents: params[:contents])
   end
   
   private
