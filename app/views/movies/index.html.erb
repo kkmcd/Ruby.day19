@@ -1,6 +1,8 @@
-<p id="notice"><%= notice %></p>
-
 <h1 id="title"> Movies </h1>
+<input type="text" class="form-control movie-title">
+<div class="recomm-movie d-flex justify-content-start row">
+    
+</div>
 <div id="title" class="row">
 <% @movies.each do |movie| %>
 <div class="card col-md-3"> <!-- 몇칸을 차지할지 지정 -->
@@ -17,6 +19,8 @@
 
 <% end %>
 </div>
+<%= paginate @movies, theme: 'twitter-bootstrap-4' %>
+<hr>
 
 <br>
 
@@ -43,6 +47,19 @@
 <% end %>
 
 <script>
+$(document).on('ready', function() {
+    $('.movie-title').on('keyup', function(){
+        $('.recomm-movie').html('');
+        var title = $(this).val();
+        
+        $.ajax({
+            url: '/movies/search_movie',
+            data: {
+                q: title
+            }
+        });
+    })
+});
 /*    var btn = document.getElementsByClassName("btn")[0];
     var count = 0;
     var msg = "나 건드리지마!!";
@@ -107,13 +124,13 @@
 
 // 버튼(요소)에 마우스를 올리면(이벤트, 이벤트 리스너)
 // 해당 버튼(요소)의 class가 btn btn-danger로 변함.(이벤트 핸들러)
-var btn = document.getElementsByClassName("btn")[0];
-btn.addEventListener("mouseover",function(){
-  btn.setAttribute("class","btn btn-danger");     
-})
+// var btn = document.getElementsByClassName("btn")[0];
+// btn.addEventListener("mouseover",function(){
+//   btn.setAttribute("class","btn btn-danger");     
+// })
 
-btn.addEventListener("mouseout",function(){
-  btn.setAttribute("class","btn btn-primary");     
-})
+// btn.addEventListener("mouseout",function(){
+//   btn.setAttribute("class","btn btn-primary");     
+// })
 
 </script>

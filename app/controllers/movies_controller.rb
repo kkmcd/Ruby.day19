@@ -1,18 +1,18 @@
 class MoviesController < ApplicationController
-before_action :js_authenticate_user!, only: [:like_movie]
-before_action :authenticate_user!, except: [:index, :show]
+before_action :js_authenticate_user!, only: [:like_movie, :create_comment, :destroy_comment, :update_comment]
+before_action :authenticate_user!, except: [:index, :show, :search_movie]
 before_action :set_movie, only: [:show, :edit, :update, :destroy, :create_comment]  
   # GET /movies
   # GET /movies.json
   def index
-    @movies = Movie.all
-    @comments = Comment.all
+    @movies = Movie.page(params[:page])
+  @users = User.order(:name).page params[:page]
   end
 
   # GET /movies/1
   # GET /movies/1.json
   def show
-      @user_likes_movie = Like.where(user_id: current_user.id, movie_id: @movie.id).first
+      @user_likes_movie = Like.where(user_id: current_user.id, movie_id: @movie.id).first #where는 객체를 리턴하기 때문에 first를 써야함.
   end
 
   # GET /movies/new
@@ -45,8 +45,8 @@ before_action :set_movie, only: [:show, :edit, :update, :destroy, :create_commen
   def update
     respond_to do |format|
       if @movie.update(movie_params)
-        format.html { redirect_to @movie, notice: 'Movie was successfully updated.' }
-        format.json { render :show, status: :ok, location: @movie }
+        format.html { redirect_to @movie, notice: 'Movie was successfully updated.' } #html로 요청이 오면 html로 보내주고
+        format.json { render :show, status: :ok, location: @movie } #json으로 요청이 오면 json으로 보내준다.
       else
         format.html { render :edit }
         format.json { render json: @movie.errors, status: :unprocessable_entity }
@@ -97,6 +97,17 @@ before_action :set_movie, only: [:show, :edit, :update, :destroy, :create_commen
   def update_comment
     @comment = Comment.find(params[:comment_id])
     @comment.update(contents: params[:contents])
+  end
+  
+  def search_movie
+    respond_to do |format|
+      if params[:q].strip.empty? #빈 공백(스페이스)을 인식하지 못하도록 strip해버림
+        format.js {render 'no_content'} # 내가 원하는(action명과 일치하는) 자바스크립트 파일을 보내줄 수 있다고 생각하면 됨.
+      else                              # 즉, no_content.js.erb를 찾아서 보내줌.
+        @movies = Movie.where("title LIKE ?","#{params[:q]}%") # q의 내용으로 시작하는 결과를 찾음.
+        format.js {render 'search_movie'}
+      end
+    end
   end
   
   private

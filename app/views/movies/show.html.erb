@@ -2,7 +2,7 @@
 <hr>
 <img class="card-img-top" src="<%= @movie.image_path.thumb.url %>" alt="">
 <p><%=@movie.description%></p>
-<%= link_to 'Edit', edit_movie_path(@movie) %> |
+<%= link_to 'Edit', edit_movie_path(@movie) %> 
 <%= link_to 'Back', movies_path %>
 <hr>
 <% if(@user_likes_movie.nil?)%>
